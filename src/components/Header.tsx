@@ -1,13 +1,40 @@
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
+import { useState } from 'react';
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  Typography,
+  Container,
+  Button,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+} from '@mui/material';
+
+import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 export default function Header() {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const [open, setOpen] = useState(false);
+
+  const menuItems = [
+    { text: 'Create Journey', path: '/create' },
+    { text: 'My Trips', path: '/trips' },
+  ];
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    setOpen(false);
+  };
 
   return (
     <AppBar
@@ -15,75 +42,76 @@ export default function Header() {
       sx={{
         background: 'linear-gradient(90deg, #1e3c72, #2a5298)',
         backdropFilter: 'blur(10px)',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
       }}
     >
       <Container maxWidth="xl">
         <Toolbar sx={{ justifyContent: 'space-between' }}>
-          {/* ЛОГО */}
-          <Box
+          {/* LOGO */}
+          <Typography
             onClick={() => navigate('/')}
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
+              fontWeight: 700,
+              color: '#fff',
               cursor: 'pointer',
+              letterSpacing: '.1rem',
             }}
           >
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 700,
-                letterSpacing: '.15rem',
-                color: '#fff',
-              }}
-            >
-              Travel Planner
-            </Typography>
-          </Box>
+            Travel Planner
+          </Typography>
 
-          {/* КНОПКИ */}
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <Button
-              variant="contained"
-              onClick={() => navigate('/create')}
-              sx={{
-                background: 'linear-gradient(45deg, #ff7e5f, #feb47b)',
-                color: '#fff',
-                fontWeight: 600,
-                borderRadius: '20px',
-                px: 3,
-                textTransform: 'none',
-                boxShadow: '0 3px 10px rgba(0,0,0,0.2)',
-                '&:hover': {
-                  transform: 'scale(1.05)',
-                  boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
-                },
-              }}
-            >
-              ✈️ Create Journey
-            </Button>
+          {/* DESKTOP MENU */}
+          {!isMobile && (
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Button
+                variant="contained"
+                onClick={() => navigate('/create')}
+                sx={{
+                  borderRadius: '20px',
+                  textTransform: 'none',
+                  background: 'linear-gradient(45deg, #ff7e5f, #feb47b)',
+                }}
+              >
+                ✈️ Create Journey
+              </Button>
 
-            <Button
-              variant="outlined"
-              onClick={() => navigate('/trips')}
-              sx={{
-                color: '#fff',
-                borderColor: 'rgba(255,255,255,0.6)',
-                borderRadius: '20px',
-                px: 3,
-                textTransform: 'none',
-                '&:hover': {
-                  backgroundColor: 'rgba(255,255,255,0.1)',
-                  borderColor: '#fff',
-                },
-              }}
-            >
-              🌍 My Trips
-            </Button>
-          </Box>
+              <Button
+                variant="outlined"
+                onClick={() => navigate('/trips')}
+                sx={{
+                  borderRadius: '20px',
+                  textTransform: 'none',
+                  color: '#fff',
+                  borderColor: 'rgba(255,255,255,0.6)',
+                }}
+              >
+                🌍 My Trips
+              </Button>
+            </Box>
+          )}
+
+          {/* MOBILE MENU BUTTON */}
+          {isMobile && (
+            <IconButton color="inherit" onClick={() => setOpen(true)}>
+              <MenuIcon />
+            </IconButton>
+          )}
         </Toolbar>
       </Container>
+
+      {/* DRAWER (mobile) */}
+      <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
+        <Box sx={{ width: 250 }}>
+          <List>
+            {menuItems.map((item) => (
+              <ListItem key={item.path} disablePadding>
+                <ListItemButton onClick={() => handleNavigate(item.path)}>
+                  <ListItemText primary={item.text} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
     </AppBar>
   );
 }
