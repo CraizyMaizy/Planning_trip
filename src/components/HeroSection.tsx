@@ -16,6 +16,7 @@ export default function HeroSection() {
         backgroundImage: `url(${photoMain})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
       }}
     >
       {/* Overlay */}
@@ -23,39 +24,47 @@ export default function HeroSection() {
         sx={{
           position: 'absolute',
           inset: 0,
+          zIndex: 1,
           background: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7))',
         }}
       />
 
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
         <Box sx={{ textAlign: 'center', color: '#fff' }}>
-          {/* Заголовок */}
           <Typography
             variant="h2"
             sx={{
               fontWeight: 800,
               mb: 2,
-              background: 'linear-gradient(45deg, #fff, #ddd)',
+              fontSize: { xs: '2.25rem', sm: '3rem', md: '3.75rem' },
+              backgroundImage: 'linear-gradient(45deg, #fff, #ddd)',
               WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}
           >
             Your Journey Starts Here
           </Typography>
 
-          {/* Подзаголовок */}
           <Typography
             variant="h5"
             sx={{
               mb: 4,
               opacity: 0.9,
+              fontSize: { xs: '1.1rem', md: '1.5rem' },
             }}
           >
             Plan trips, explore destinations and create unforgettable memories
           </Typography>
 
-          {/* Кнопки */}
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 2,
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+            }}
+          >
             <Button
               variant="contained"
               size="large"
@@ -66,9 +75,8 @@ export default function HeroSection() {
                 px: 4,
                 textTransform: 'none',
                 fontWeight: 600,
-                '&:hover': {
-                  transform: 'scale(1.05)',
-                },
+                transition: 'transform 0.2s ease',
+                '&:hover': { transform: 'scale(1.05)' },
               }}
             >
               ✈️ Start Planning
@@ -84,8 +92,11 @@ export default function HeroSection() {
                 borderRadius: '30px',
                 px: 4,
                 textTransform: 'none',
+                transition: 'transform 0.2s ease, background-color 0.2s ease',
                 '&:hover': {
+                  borderColor: '#fff',
                   backgroundColor: 'rgba(255,255,255,0.1)',
+                  transform: 'scale(1.05)',
                 },
               }}
             >

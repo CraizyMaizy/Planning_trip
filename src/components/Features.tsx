@@ -45,9 +45,10 @@ export default function Features() {
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={feature.id}>
               <Box
                 sx={{
-                  transition: 'all 0.3s ease',
+                  height: '100%',
                   borderRadius: 4,
                   overflow: 'hidden',
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                   '&:hover': {
                     transform: 'translateY(-8px)',
                     boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
@@ -79,6 +80,7 @@ export default function Features() {
               fontWeight: 600,
               fontSize: '1rem',
               boxShadow: '0 5px 20px rgba(0,0,0,0.2)',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
               '&:hover': {
                 transform: 'scale(1.05)',
                 boxShadow: '0 8px 25px rgba(0,0,0,0.3)',
