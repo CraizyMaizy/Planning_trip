@@ -8,7 +8,7 @@ interface JourneyCardProps {
 
 export default function JourneyCard({ image, title, description }: JourneyCardProps) {
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ width: '100%', height: '100%' }}>
       <CardMedia
         component="img"
         image={image}

@@ -42,7 +42,7 @@ export default function Features() {
         {/* Карточки */}
         <Grid container spacing={4}>
           {featuresData.map((feature) => (
-            <Grid item xs={12} sm={6} md={4} key={feature.id}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={feature.id}>
               <Box
                 sx={{
                   transition: 'all 0.3s ease',

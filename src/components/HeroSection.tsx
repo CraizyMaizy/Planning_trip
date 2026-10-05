@@ -1,5 +1,6 @@
 import { Container, Box, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import photoMain from '../assets/photo3.jpeg';
 
 export default function HeroSection() {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ export default function HeroSection() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundImage: 'url(https://images.unsplash.com/photo-1507525428034-b723cf961d3e)',
+        backgroundImage: `url(${photoMain})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
