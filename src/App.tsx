@@ -4,7 +4,7 @@ import CreateJourney from './pages/CreateJourney';
 import Home from './pages/Home.tsx';
 import TripsList from './pages/TripsList.tsx';
 import ScrollToTop from './components/ScrollToTop.tsx';
-import Layout from './components/Layout.tsx';
+import Layout from './components/TripEditor.tsx';
 
 const theme = createTheme({
   palette: {
