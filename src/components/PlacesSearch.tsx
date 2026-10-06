@@ -13,8 +13,8 @@ import {
   Typography,
 } from '@mui/material';
 
-import { geocodeCity } from '../api/nominatim';
-import { fetchAttractionsByCity, fetchAttractionsByName } from '../api/overpass';
+import { searchPlaces } from '../api/nominatim';
+import { fetchAttractionsByCity } from '../api/overpass';
 import { useDebounce } from '../hooks/useDebounce';
 import type { ApiPlace } from '../types/types.ts';
 import { getCache, setCache } from '../utilis/cache.ts';
@@ -54,10 +54,12 @@ export default function PlacesSearch({ onSelect }: { onSelect: (place: ApiPlace)
     if (value.length < 3) {
       setResults([]);
       setOpen(false);
+      setLoading(false);
       return;
     }
 
-    let cancelled = false;
+    const controller = new AbortController();
+    const { signal } = controller;
 
     const run = async () => {
       const cacheKey = value.toLowerCase();
@@ -66,41 +68,41 @@ export default function PlacesSearch({ onSelect }: { onSelect: (place: ApiPlace)
       if (cached) {
         setResults(cached);
         setOpen(true);
+        setLoading(false);
         return;
       }
 
       setLoading(true);
 
       try {
-        // 1. поиск POI по названию
-        let places = toPlaces(await fetchAttractionsByName(value));
+        // 1. быстрый поиск через Nominatim
+        const found = await searchPlaces(value, signal);
+        let places: ApiPlace[] = found;
 
-        // 2. если не нашли, считаем запрос городом
-        if (places.length === 0) {
-          const city = await geocodeCity(value);
-          places = toPlaces(await fetchAttractionsByCity(city.lat, city.lon));
+        // 2. если запрос это город, показываем достопримечательности рядом
+        if (found[0]?.category === 'place') {
+          const attractions = toPlaces(
+            await fetchAttractionsByCity(Number(found[0].lat), Number(found[0].lon), signal),
+          );
+          if (attractions.length > 0) places = attractions;
         }
 
         places = places.slice(0, 10);
         setCache(cacheKey, places);
-
-        if (cancelled) return;
         setResults(places);
         setOpen(true);
-      } catch {
-        if (cancelled) return;
+      } catch (err) {
+        if ((err as Error).name === 'AbortError') return;
         setResults([]);
         setOpen(false);
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!signal.aborted) setLoading(false);
       }
     };
 
     run();
 
-    return () => {
-      cancelled = true;
-    };
+    return () => controller.abort();
   }, [debouncedQuery]);
 
   const close = () => setOpen(false);
