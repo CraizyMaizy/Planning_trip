@@ -52,7 +52,7 @@ map, keep a packing checklist, and store flight and hotel details in one place.
 
 ```bash
 git clone https://github.com/CraizyMaizy/Planning_trip
-cd <project-folder>
+cd planning_trip
 npm install
 ```
 
