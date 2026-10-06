@@ -17,7 +17,7 @@ import { searchPlaces } from '../api/nominatim';
 import { fetchAttractionsByCity } from '../api/overpass';
 import { useDebounce } from '../hooks/useDebounce';
 import type { ApiPlace } from '../types/types.ts';
-import { getCache, setCache } from '../utilis/cache.ts';
+import { getCache, setCache } from '../utils/cache.ts';
 
 type OverpassItem = {
   lat?: number;
@@ -42,7 +42,7 @@ const toPlaces = (items: OverpassItem[]): ApiPlace[] =>
 
 export default function PlacesSearch({ onSelect }: { onSelect: (place: ApiPlace) => void }) {
   const [query, setQuery] = useState('');
-  const debouncedQuery = useDebounce(query, 500);
+  const debouncedQuery = useDebounce(query);
 
   const [results, setResults] = useState<ApiPlace[]>([]);
   const [open, setOpen] = useState(false);
@@ -64,7 +64,7 @@ export default function PlacesSearch({ onSelect }: { onSelect: (place: ApiPlace)
     const run = async () => {
       const cacheKey = value.toLowerCase();
 
-      const cached = getCache(cacheKey);
+      const cached = getCache<ApiPlace[]>(cacheKey);
       if (cached) {
         setResults(cached);
         setOpen(true);
@@ -75,11 +75,9 @@ export default function PlacesSearch({ onSelect }: { onSelect: (place: ApiPlace)
       setLoading(true);
 
       try {
-        // 1. быстрый поиск через Nominatim
         const found = await searchPlaces(value, signal);
         let places: ApiPlace[] = found;
 
-        // 2. если запрос это город, показываем достопримечательности рядом
         if (found[0]?.category === 'place') {
           const attractions = toPlaces(
             await fetchAttractionsByCity(Number(found[0].lat), Number(found[0].lon), signal),
