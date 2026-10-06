@@ -3,8 +3,13 @@
 A web app for planning trips: pick dates, search for places and see them on a
 map, keep a packing checklist, and store flight and hotel details in one place.
 
-<!-- Add a screenshot or GIF here -->
-<!-- ![Travel Planner](./docs/screenshot.png) -->
+![Travel Planner](./src/screenshots/home-hero.png)
+![Travel Planner](./src/screenshots/home-features.png)
+![Travel Planner](./src/screenshots/home-destinations.png)
+![Travel Planner](./src/screenshots/trip-editor-search.png)
+![Travel Planner](./src/screenshots/trip-editor-search-markers.png)
+![Travel Planner](./src/screenshots/trips-list.png)
+![Travel Planner](./src/screenshots/delete-dialog.png)
 
 ## Features
 

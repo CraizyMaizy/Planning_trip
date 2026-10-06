@@ -45,7 +45,7 @@ const formatDate = (date: string) =>
 export default function TripsList() {
   const [trips, setTrips] = useState<Trip[]>(loadTrips);
   const navigate = useNavigate();
-
+  const getShortName = (name: string) => name.split(',')[0].trim();
   const [tripToDelete, setTripToDelete] = useState<Trip | null>(null);
 
   const handleConfirmDelete = () => {
@@ -228,8 +228,14 @@ export default function TripsList() {
                             )}
 
                             {places.slice(0, 3).map((place) => (
-                              <Typography key={place.id} variant="body2" color="text.secondary">
-                                • {place.name}
+                              <Typography
+                                key={place.id}
+                                variant="body2"
+                                color="text.secondary"
+                                noWrap
+                                title={place.name}
+                              >
+                                • {getShortName(place.name)}
                               </Typography>
                             ))}
 
