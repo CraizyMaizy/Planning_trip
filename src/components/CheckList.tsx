@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import {
   Box,
-  TextField,
   Button,
-  Typography,
   Checkbox,
   IconButton,
   List,
   ListItem,
+  ListItemIcon,
   ListItemText,
+  TextField,
+  Typography,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import type { ChecklistProps } from '../types/types.ts';
@@ -17,17 +18,17 @@ export default function Checklist({ items, setItems }: ChecklistProps) {
   const [input, setInput] = useState('');
 
   const addItem = () => {
-    if (!input.trim()) return;
+    const text = input.trim();
+    if (!text) return;
 
     setItems((prev) => [
       ...prev,
       {
-        id: Date.now(),
-        text: input,
+        id: Date.now() + Math.random(),
+        text,
         done: false,
       },
     ]);
-
     setInput('');
   };
 
@@ -61,41 +62,59 @@ export default function Checklist({ items, setItems }: ChecklistProps) {
           label="Add item"
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              addItem();
+            }
+          }}
         />
 
-        <Button variant="contained" onClick={addItem}>
+        <Button variant="contained" onClick={addItem} disabled={!input.trim()}>
           Add
         </Button>
       </Box>
+
+      {items.length === 0 && <Typography color="text.secondary">Nothing to pack yet</Typography>}
 
       <List>
         {items.map((el) => (
           <ListItem
             key={el.id}
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              background: '#f8fafc',
-              mb: 1,
-              borderRadius: 2,
-              px: 2,
-            }}
+            sx={{ background: '#f8fafc', mb: 1, borderRadius: 2, px: 2 }}
+            secondaryAction={
+              <IconButton
+                edge="end"
+                size="small"
+                aria-label={`Delete ${el.text}`}
+                onClick={() => deleteItem(el.id)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            }
           >
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Checkbox checked={el.done} onChange={() => toggleItem(el.id)} />
-
-              <ListItemText
-                primary={el.text}
-                sx={{
-                  textDecoration: el.done ? 'line-through' : 'none',
-                  color: el.done ? 'gray' : 'inherit',
-                }}
+            <ListItemIcon sx={{ minWidth: 0 }}>
+              <Checkbox
+                edge="start"
+                checked={el.done}
+                onChange={() => toggleItem(el.id)}
+                slotProps={{ input: { 'aria-label': el.text } }}
               />
-            </Box>
+            </ListItemIcon>
 
-            <IconButton onClick={() => deleteItem(el.id)} size="small">
-              <DeleteIcon />
-            </IconButton>
+            <ListItemText
+              primary={el.text}
+              sx={{ minWidth: 0 }}
+              slotProps={{
+                primary: {
+                  sx: {
+                    wordBreak: 'break-word',
+                    textDecoration: el.done ? 'line-through' : 'none',
+                    color: el.done ? 'text.disabled' : 'text.primary',
+                  },
+                },
+              }}
+            />
           </ListItem>
         ))}
       </List>

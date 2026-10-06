@@ -1,14 +1,16 @@
 import { Box, TextField, Typography } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
+import type { Dayjs } from 'dayjs';
 
 type TripHeaderProps = {
   title: string;
   setTitle: (value: string) => void;
-  startDate: any;
-  setStartDate: (value: any) => void;
-  endDate: any;
-  setEndDate: (value: any) => void;
+  startDate: Dayjs | null;
+  setStartDate: (value: Dayjs | null) => void;
+  endDate: Dayjs | null;
+  setEndDate: (value: Dayjs | null) => void;
 };
+
 export default function TripHeader({
   title,
   setTitle,
@@ -27,6 +29,7 @@ export default function TripHeader({
       {/* Название */}
       <TextField
         fullWidth
+        required
         label="Trip title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
@@ -34,19 +37,29 @@ export default function TripHeader({
       />
 
       {/* Даты */}
-      <Box sx={{ display: 'flex', gap: 2 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2,
+        }}
+      >
         <DatePicker
           label="Start date"
           value={startDate}
-          onChange={(newValue) => setStartDate(newValue)}
-          sx={{ flex: 1 }}
+          onChange={setStartDate}
+          maxDate={endDate ?? undefined}
+          slotProps={{ textField: { required: true } }}
+          sx={{ flex: 1, minWidth: 0 }}
         />
 
         <DatePicker
           label="End date"
           value={endDate}
-          onChange={(newValue) => setEndDate(newValue)}
-          sx={{ flex: 1 }}
+          onChange={setEndDate}
+          minDate={startDate ?? undefined}
+          slotProps={{ textField: { required: true } }}
+          sx={{ flex: 1, minWidth: 0 }}
         />
       </Box>
     </Box>
