@@ -66,7 +66,13 @@ export default function Features() {
         </Grid>
 
         {/* CTA */}
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            mt: { xs: 4, sm: 8 },
+          }}
+        >
           <Button
             variant="contained"
             size="large"
@@ -74,11 +80,11 @@ export default function Features() {
             sx={{
               background: 'linear-gradient(45deg, #ff7e5f, #feb47b)',
               borderRadius: '30px',
-              px: 5,
-              py: 1.5,
+              px: { xs: 3, sm: 5 },
+              py: { xs: 1, sm: 1.5 },
               textTransform: 'none',
               fontWeight: 600,
-              fontSize: '1rem',
+              fontSize: { xs: '0.875rem', sm: '1rem' },
               boxShadow: '0 5px 20px rgba(0,0,0,0.2)',
               transition: 'transform 0.2s ease, box-shadow 0.2s ease',
               '&:hover': {
