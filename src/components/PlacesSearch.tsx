@@ -19,6 +19,8 @@ import { useDebounce } from '../hooks/useDebounce';
 import type { ApiPlace } from '../types/types.ts';
 import { getCache, setCache } from '../utils/cache.ts';
 
+const MIN_QUERY_LENGTH = 3;
+
 type OverpassItem = {
   lat?: number;
   lon?: number;
@@ -48,15 +50,11 @@ export default function PlacesSearch({ onSelect }: { onSelect: (place: ApiPlace)
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const value = debouncedQuery.trim();
+  const value = debouncedQuery.trim();
+  const canSearch = value.length >= MIN_QUERY_LENGTH;
 
-    if (value.length < 3) {
-      setResults([]);
-      setOpen(false);
-      setLoading(false);
-      return;
-    }
+  useEffect(() => {
+    if (!canSearch) return;
 
     const controller = new AbortController();
     const { signal } = controller;
@@ -101,9 +99,19 @@ export default function PlacesSearch({ onSelect }: { onSelect: (place: ApiPlace)
     run();
 
     return () => controller.abort();
-  }, [debouncedQuery]);
+  }, [value, canSearch]);
 
   const close = () => setOpen(false);
+
+  const handleChange = (next: string) => {
+    setQuery(next);
+    if (next.trim().length < MIN_QUERY_LENGTH) {
+      setResults([]);
+      setOpen(false);
+    }
+  };
+
+  const isLoading = loading && canSearch;
 
   return (
     <ClickAwayListener onClickAway={close}>
@@ -112,13 +120,13 @@ export default function PlacesSearch({ onSelect }: { onSelect: (place: ApiPlace)
           fullWidth
           label="Search places or city"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => handleChange(e.target.value)}
           onFocus={() => results.length > 0 && setOpen(true)}
           onKeyDown={(e) => e.key === 'Escape' && close()}
           autoComplete="off"
           slotProps={{
             input: {
-              endAdornment: loading ? (
+              endAdornment: isLoading ? (
                 <InputAdornment position="end">
                   <CircularProgress size={20} />
                 </InputAdornment>
