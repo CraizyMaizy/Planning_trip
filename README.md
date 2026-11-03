@@ -105,7 +105,7 @@ type Trip = {
   id: number;
   title: string;
   startDate: string; // YYYY-MM-DD
-  endDate: string;   // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
   places: Place[];
   items: ChecklistItem[];
   flight: string;
