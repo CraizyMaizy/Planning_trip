@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Box, Button } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
 import TripHeader from '../components/TripHeader';
 import PlacesList from './PlaceList.tsx';
@@ -32,39 +32,35 @@ const loadTrips = (): Trip[] => {
 };
 
 export default function TripEditor() {
-  const [title, setTitle] = useState('');
-  const [startDate, setStartDate] = useState<Dayjs | null>(() => dayjs().startOf('day'));
-  const [endDate, setEndDate] = useState<Dayjs | null>(() => dayjs().startOf('day'));
-  const [places, setPlaces] = useState<Place[]>([]);
-  const [flight, setFlight] = useState('');
-  const [hotel, setHotel] = useState('');
-  const [address, setAddress] = useState('');
-  const [items, setItems] = useState<ChecklistItem[]>([]);
-  const [coverImage, setCoverImage] = useState(
-    () => TRIP_IMAGES[Math.floor(Math.random() * TRIP_IMAGES.length)],
+  const { id } = useParams();
+
+  if (!id) return <TripForm key="new" />;
+
+  const trip = loadTrips().find((t) => t.id === Number(id));
+  if (!trip) return <Navigate to="/trips" replace />;
+
+  return <TripForm key={trip.id} trip={trip} />;
+}
+
+function TripForm({ trip }: { trip?: Trip }) {
+  const [title, setTitle] = useState(trip?.title ?? '');
+  const [startDate, setStartDate] = useState<Dayjs | null>(() =>
+    trip ? dayjs(trip.startDate) : dayjs().startOf('day'),
+  );
+  const [endDate, setEndDate] = useState<Dayjs | null>(() =>
+    trip ? dayjs(trip.endDate) : dayjs().startOf('day'),
+  );
+  const [places, setPlaces] = useState<Place[]>(trip?.places ?? []);
+  const [flight, setFlight] = useState(trip?.flight ?? '');
+  const [hotel, setHotel] = useState(trip?.hotelName ?? '');
+  const [address, setAddress] = useState(trip?.hotelAddress ?? '');
+  const [items, setItems] = useState<ChecklistItem[]>(trip?.items ?? []);
+  const [coverImage] = useState(
+    () => trip?.coverImage ?? TRIP_IMAGES[Math.floor(Math.random() * TRIP_IMAGES.length)],
   );
 
   const navigate = useNavigate();
-  const { id } = useParams();
-  const isEditMode = Boolean(id);
-
-  // загрузка поездки в режиме редактирования
-  useEffect(() => {
-    if (!id) return;
-
-    const foundTrip = loadTrips().find((t) => t.id === Number(id));
-    if (!foundTrip) return;
-
-    setTitle(foundTrip.title);
-    setStartDate(dayjs(foundTrip.startDate));
-    setEndDate(dayjs(foundTrip.endDate));
-    setPlaces(foundTrip.places ?? []);
-    setItems(foundTrip.items ?? []);
-    setFlight(foundTrip.flight ?? '');
-    setHotel(foundTrip.hotelName ?? '');
-    setAddress(foundTrip.hotelAddress ?? '');
-    if (foundTrip.coverImage) setCoverImage(foundTrip.coverImage);
-  }, [id]);
+  const isEditMode = Boolean(trip);
 
   const isValid =
     title.trim().length > 0 &&
@@ -75,8 +71,8 @@ export default function TripEditor() {
   const handleSave = () => {
     if (!isValid || !startDate || !endDate) return;
 
-    const trip: Trip = {
-      id: isEditMode ? Number(id) : Date.now(),
+    const newTrip: Trip = {
+      id: trip ? trip.id : Date.now(),
       title: title.trim(),
       startDate: startDate.format(DATE_FORMAT),
       endDate: endDate.format(DATE_FORMAT),
@@ -90,8 +86,8 @@ export default function TripEditor() {
 
     const savedTrips = loadTrips();
     const updatedTrips = isEditMode
-      ? savedTrips.map((t) => (t.id === trip.id ? trip : t))
-      : [...savedTrips, trip];
+      ? savedTrips.map((t) => (t.id === newTrip.id ? newTrip : t))
+      : [...savedTrips, newTrip];
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTrips));
     navigate('/trips');
