@@ -30,7 +30,9 @@ export const setCache = <T>(key: string, data: T): void => {
   try {
     const entry: CacheEntry<T> = { data, timestamp: Date.now() };
     localStorage.setItem(CACHE_PREFIX + key, JSON.stringify(entry));
-  } catch {}
+  } catch {
+    // storage is full or unavailable (private mode): caching is optional, so skip it
+  }
 };
 
 export const clearExpiredCache = (): void => {
@@ -51,5 +53,7 @@ export const clearExpiredCache = (): void => {
           localStorage.removeItem(k);
         }
       });
-  } catch {}
+  } catch {
+    // localStorage is unavailable (private mode or blocked): nothing to clean up
+  }
 };
