@@ -31,14 +31,14 @@ export const searchPlaces = async (
     throw new Error(`Nominatim request failed: ${res.status}`);
   }
 
-  const data = await res.json();
+  const data = (await res.json()) as NominatimPlace[];
 
-  return data.map((item: any) => ({
-    display_name: item.display_name,
-    lat: item.lat,
-    lon: item.lon,
-    category: item.category,
-    type: item.type,
+  return data.map(({ display_name, lat, lon, category, type }) => ({
+    display_name,
+    lat,
+    lon,
+    category,
+    type,
   }));
 };
 
